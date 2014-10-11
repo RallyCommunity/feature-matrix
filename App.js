@@ -1,5 +1,3 @@
-//NMTest
-
 (function() {
     var Ext = window.Ext4 || window.Ext;
 
@@ -70,8 +68,6 @@
             this._extractAllowedValues(model, ['State', 'Priority']).then({
                 success: function(allowedValues) {
                     this.states = allowedValues.State;
-                    console.log('this.states=allowedValues.State', this.states);
-                    console.log('allowedValues', allowedValues);
                     this.priorities = allowedValues.Priority;
                     this._initializeAllFeatureStore();
                 },
@@ -95,7 +91,6 @@
                                 value = 'None';
                             }
                             if (fieldName === 'State') {
-                                console.log('record...ref..state', record.get('_ref'));
                                 that._statesObjects.push({name:value,ref:ref});
                             }
                             return value === '' ? 'None' : value;
@@ -161,12 +156,10 @@
         },
 
         _populateMatrixTable: function(defectRecords) {
-            console.log('...matix table...',this.matrixTable );
             var priorityIndex, stateIndex;
             Ext.each(defectRecords, function(record) {
                 var priority = record.get('Priority');
                 if (!priority) {
-                    console.log('priority equals none');
                     priority = 'None';
                 }
                 var state = record.get('State');
@@ -174,24 +167,19 @@
                     state = 'None';
                 }
                 else{
-                    console.log('State....', record.get('State'));
                     state = record.get('State')._refObjectName;
                 }
                 priorityIndex = this._determinePriorityIndex(priority,record);
                 stateIndex = this._determineStateIndex(state,record);
-                console.log('priorityIndex, stateIndex',priorityIndex, stateIndex);
                 this.matrixTable[priorityIndex][stateIndex]++;
             }, this);
         },
 
         _determinePriorityIndex: function(value,record) {
-            console.log('_determinePriorityIndex', record, value,this.priorities.indexOf(value));
             return this.priorities.indexOf(value);
         },
 
         _determineStateIndex: function(value,record) {
-            console.log('_determineStateIndex', record, 'value:' ,value,this.states.indexOf(value));
-            console.log('this.states in determineStateIndex', this.states);
             return this.states.indexOf(value);
         },
 
@@ -336,7 +324,6 @@
                 enableEditing: false,
                 margin: '0 0 10px 0'
             });
-            console.log('store', this.defectGrid.getStore());
         },
 
         _changeFeatureGridTitleAndFilters: function(newTitle, newFilters) {
@@ -349,26 +336,17 @@
         },
 
         _createNewFeatureFilters: function(priority, state, allPriorities, allStates) {
-            if (state === "None") {
-                console.log("State is NONE!!!");
-            }
             if (priority === "None") {
-                console.log("Priority is NONE!!!");
                 priority = "";
             }
             var newFilters = [this.releaseFilter];
             var currentStateRef = '';
-            console.log('statesObj:', this._statesObjects);
             
             _.each(this._statesObjects, function(stateObj){
-                console.log('stateObj outside of if',stateObj);
                 if (stateObj.name === state) {
-                    console.log('equal', stateObj.name, state);
                     currentStateRef = stateObj.ref;
                 }
             });
-            
-            console.log('currentStateRef', currentStateRef);
 
             if (!allPriorities) {
                 newFilters.push({
